@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Fiebre (WHILE)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #e8f8f5; /* Fondo claro */
+        }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border: 2px solid #2ecc71; /* Borde verde */
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.2);
+        }
+        h2 {
+            color: #1abc9c; /* Verde turquesa */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p.instruction {
+            background-color: #f0fdf9;
+            padding: 10px;
+            border-left: 4px solid #1abc9c;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #1abc9c;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #1abc9c;
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #16a085;
+        }
+        #lista-temperaturas {
+            min-height: 40px;
+            padding: 10px;
+            border: 1px dashed #1abc9c;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        #resultado {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            text-align: center;
+            font-weight: bold;
+            background-color: #d1f4ee; 
+            color: #0d4f40;
+        }
+        .fever {
+            color: #e74c3c; /* Rojo para fiebre */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🏥 Monitoreo de Temperatura de Pacientes</h2>
+        
+        <p class="instruction">
+            Ingresa la temperatura del paciente (°C). El conteo de pacientes con fiebre (≥ 38°C) se detendrá cuando ingreses **0**.
+        </p>
+        
+        <div class="input-group">
+            <input type="number" id="temperatura" step="any" placeholder="Temperatura en °C">
+            <button id="btn-registrar" onclick="registrarTemperatura()">Registrar</button>
+        </div>
+
+        <p>Lecturas registradas:</p>
+        <div id="lista-temperaturas">Esperando la primera lectura...</div>
+        
+        <div id="resultado">Presiona registrar para comenzar.</div>
+    </div>
+
+    <script>
+        // Variables globales
+        let contadorFiebre = 0; // Contará las temperaturas >= 38°C
+        let temperaturasRegistradas = []; // Array para historial
+        const UMBRAL = 38.0; // Umbral de fiebre
+        let registroActivo = true;
+
+        function registrarTemperatura() {
+            if (!registroActivo) {
+                alert("El registro ya ha finalizado. Recarga para empezar de nuevo.");
+                return;
+            }
+            
+            const inputElement = document.getElementById('temperatura');
+            const tempInput = inputElement.value;
+            const temperatura = parseFloat(tempInput);
+            const resultadoDiv = document.getElementById('resultado');
+
+            // 1. Validación de entrada
+            if (isNaN(tempInput) || tempInput.trim() === "") {
+                resultadoDiv.innerHTML = "❌ **Error:** Por favor, ingresa un valor numérico válido.";
+                resultadoDiv.style.backgroundColor = '#f8d7da';
+                resultadoDiv.style.color = '#721c24';
+                return;
+            }
+            
+            // 2. Condición de Parada (Simulación del WHILE)
+            // La condición del bucle WHILE es: "mientras la temperatura sea diferente de 0"
+            if (temperatura === 0) {
+                registroActivo = false;
+                mostrarResultado();
+                // Deshabilitar controles
+                inputElement.disabled = true; 
+                document.getElementById('btn-registrar').disabled = true;
+                return;
+            }
+            
+            // 3. Ejecución del cuerpo del bucle (mientras temp !== 0)
+            
+            // a) Contar si es fiebre
+            if (temperatura >= UMBRAL) {
+                contadorFiebre++; 
+            }
+            
+            // b) Almacenar el registro
+            temperaturasRegistradas.push(temperatura);
+            
+            // c) Actualizar la interfaz
+            actualizarListaTemperaturas(temperatura);
+            inputElement.value = ''; // Limpiar el input
+            inputElement.focus();
+            resultadoDiv.innerHTML = `Llevas ${temperaturasRegistradas.length} lecturas. ${contadorFiebre} pacientes con fiebre.`;
+            resultadoDiv.style.backgroundColor = '#d1f4ee';
+            resultadoDiv.style.color = '#0d4f40';
+        }
+        
+        function actualizarListaTemperaturas(nuevaTemp) {
+            const listaDiv = document.getElementById('lista-temperaturas');
+            
+            const item = document.createElement('span');
+            item.textContent = `${nuevaTemp.toFixed(1)}°C`;
+            
+            // Resaltar si es fiebre
+            if (nuevaTemp >= UMBRAL) {
+                item.className = 'fever';
+                item.textContent += ' (FIEBRE)';
+            }
+            
+            listaDiv.appendChild(item);
+            listaDiv.appendChild(document.createTextNode(' | '));
+        }
+
+        function mostrarResultado() {
+            const resultadoDiv = document.getElementById('resultado');
+            
+            resultadoDiv.innerHTML = `
+                ✅ **REGISTRO FINALIZADO**<br>
+                Total de lecturas: **${temperaturasRegistradas.length}**<br>
+                Pacientes con fiebre (≥ 38°C): **${contadorFiebre}**
+            `;
+            resultadoDiv.style.backgroundColor = '#1abc9c';
+            resultadoDiv.style.color = '#ffffff';
+        }
+        
+        // Inicializar la lista al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+             document.getElementById('lista-temperaturas').innerHTML = 'Esperando la primera lectura...';
+        });
+    </script>
+
+</body>
+</html>

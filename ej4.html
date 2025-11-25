@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación de TRIAGE</title>
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            margin: 20px;
+            background-color: #f0f0f5;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .code-list {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .code-list li {
+            display: inline-block;
+            margin: 0 8px;
+            font-weight: bold;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #9b59b6; /* Púrpura */
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #8e44ad;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .color-rojo { background-color: #e74c3c; color: white; }
+        .color-amarillo { background-color: #f1c40f; color: black; }
+        .color-verde { background-color: #2ecc71; color: white; }
+        .color-azul { background-color: #3498db; color: white; }
+        .color-default { background-color: #ecf0f1; color: #333; }
+        .priority-level {
+            display: block;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🏥 Sistema de Clasificación TRIAGE</h2>
+        
+        <ul class="code-list">
+            <li>1: Rojo</li>
+            <li>2: Amarillo</li>
+            <li>3: Verde</li>
+            <li>4: Azul</li>
+        </ul>
+        
+        <label for="codigo">Ingresa el Código de TRIAGE (1-4):</label>
+        <input type="number" id="codigo" min="1" max="4" placeholder="Código de 1 a 4">
+        
+        <button onclick="clasificarTriage()">Clasificar</button>
+        
+        <div id="resultado" class="color-default">Esperando código...</div>
+    </div>
+
+    <script>
+        function clasificarTriage() {
+            // 1. Obtener el valor ingresado por el usuario
+            const codigoInput = document.getElementById('codigo').value;
+            const codigo = parseInt(codigoInput);
+            const resultadoDiv = document.getElementById('resultado');
+            let categoria = "";
+            let prioridad = "";
+            let claseEstilo = "";
+
+            // 2. Validación y Aplicación de la estructura SWITCH
+            
+            switch (codigo) {
+                case 1:
+                    categoria = "ROJO";
+                    prioridad = "PRIORIDAD 1: EMERGENCIA. Atención inmediata (0 - 10 min).";
+                    claseEstilo = "color-rojo";
+                    break;
+                case 2:
+                    categoria = "AMARILLO";
+                    prioridad = "PRIORIDAD 2: URGENCIA. Atención en el menor tiempo posible (10 - 60 min).";
+                    claseEstilo = "color-amarillo";
+                    break;
+                case 3:
+                    categoria = "VERDE";
+                    prioridad = "PRIORIDAD 3: URGENCIA MENOR. Demora aceptable (60 - 120 min).";
+                    claseEstilo = "color-verde";
+                    break;
+                case 4:
+                    categoria = "AZUL";
+                    prioridad = "PRIORIDAD 4: NO URGENTE. Se puede demorar o derivar a consulta externa.";
+                    claseEstilo = "color-azul";
+                    break;
+                default:
+                    categoria = "CÓDIGO INVÁLIDO";
+                    prioridad = "Por favor, ingresa un código entre 1 y 4.";
+                    claseEstilo = "color-default";
+            }
+
+            // 3. Mostrar el resultado
+            resultadoDiv.innerHTML = `
+                Categoría: **${categoria}**<br>
+                <span class="priority-level">${prioridad}</span>
+            `;
+            // Aplicar la clase de estilo (color)
+            resultadoDiv.className = claseEstilo;
+        }
+    </script>
+
+</body>
+</html>

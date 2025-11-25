@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación de Presión Arterial</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 20px;
+            background-color: #fcfcfc;
+        }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #c0392b; /* Rojo para énfasis de salud */
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-item {
+            flex-grow: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db; /* Azul para el botón */
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 17px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #resultado {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .status-normal { background-color: #d4edda; color: #155724; } /* Verde */
+        .status-elevada { background-color: #fff3cd; color: #856404; } /* Amarillo */
+        .status-grado1 { background-color: #fecf9c; color: #721c24; } /* Naranja */
+        .status-grado2 { background-color: #f8d7da; color: #721c24; } /* Rojo */
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Clasificación de Presión Arterial (mm Hg)</h2>
+        
+        <div class="input-group">
+            <div class="input-item">
+                <label for="sistolica">Presión Sistólica (Máx):</label>
+                <input type="number" id="sistolica" min="50" placeholder="Ej: 120">
+            </div>
+            <div class="input-item">
+                <label for="diastolica">Presión Diastólica (Mín):</label>
+                <input type="number" id="diastolica" min="30" placeholder="Ej: 80">
+            </div>
+        </div>
+        
+        <button onclick="clasificarPresion()">Clasificar</button>
+        
+        <div id="resultado">Esperando valores...</div>
+    </div>
+
+    <script>
+        function clasificarPresion() {
+            const sistolicaInput = document.getElementById('sistolica').value;
+            const diastolicaInput = document.getElementById('diastolica').value;
+            const sistolica = parseInt(sistolicaInput);
+            const diastolica = parseInt(diastolicaInput);
+            const resultadoDiv = document.getElementById('resultado');
+            let clasificacion = "";
+            let claseEstilo = "";
+
+            // 1. Validación de entrada
+            if (isNaN(sistolica) || isNaN(diastolica) || sistolica <= 0 || diastolica <= 0) {
+                resultadoDiv.innerHTML = "❌ **Error:** Por favor, ingresa valores numéricos válidos y positivos.";
+                resultadoDiv.className = ''; 
+                return;
+            }
+
+            // 2. Aplicar la clasificación usando IF-ELSE IF-ELSE
+            
+            // HTA Grado 2: S > 140 O D > 90
+            if (sistolica >= 140 || diastolica >= 90) {
+                clasificacion = "HTA Grado 2 (Hipertensión Severa)";
+                claseEstilo = "status-grado2";
+            } 
+            // HTA Grado 1: S 130-139 O D 80-89
+            else if (sistolica >= 130 || diastolica >= 80) {
+                clasificacion = "HTA Grado 1 (Hipertensión Leve)";
+                claseEstilo = "status-grado1";
+            } 
+            // Elevada: S 120-129 Y D < 80
+            else if (sistolica >= 120 && diastolica < 80) {
+                clasificacion = "Elevada (Pre-hipertensión)";
+                claseEstilo = "status-elevada";
+            } 
+            // Normal: S < 120 Y D < 80
+            else if (sistolica < 120 && diastolica < 80) {
+                clasificacion = "Normal";
+                claseEstilo = "status-normal";
+            } 
+            // Manejo de casos atípicos o error en la entrada (aunque las condiciones anteriores cubren casi todo)
+            else {
+                clasificacion = "Clasificación No Estándar. Revisa tus valores.";
+                claseEstilo = "status-elevada"; 
+            }
+
+            // 3. Mostrar el resultado
+            resultadoDiv.innerHTML = `
+                Sistólica: **${sistolica}** / Diastólica: **${diastolica}**<br>
+                Clasificación: **${clasificacion}**
+            `;
+            // Aplicar la clase de estilo para el color
+            resultadoDiv.className = claseEstilo;
+        }
+    </script>
+
+</body>
+</html>

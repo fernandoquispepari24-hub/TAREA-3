@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Saturación SpO2</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #f0f7f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #e67e22; /* Naranja/Óxido */
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .instruction {
+            background-color: #fcf4e8;
+            padding: 15px;
+            border-left: 5px solid #e67e22;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="number"], input[type="text"] {
+            padding: 12px;
+            border: 1px solid #e67e22;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #e67e22;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #d35400;
+        }
+        #registros {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #e67e22;
+            border-radius: 5px;
+            background-color: #fff8f0;
+            min-height: 50px;
+        }
+        .registro-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-bottom: 1px dotted #ccc;
+        }
+        .low-spo2 {
+            color: #c0392b; /* Rojo para SpO2 baja */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🧡 Registro de Saturación de Oxígeno ($\text{SpO}_2$)</h2>
+        
+        <p class="instruction">
+            El registro se ejecuta **al menos una vez**. Para detener las mediciones, ingresa **"no"** en el campo de continuación.
+        </p>
+        
+        <div class="input-group">
+            <label for="spo2">Nivel de Saturación $\text{SpO}_2$ (%):</label>
+            <input type="number" id="spo2" min="1" max="100" step="1" placeholder="Ej: 98, 89">
+            <label for="continuar">¿Deseas registrar otra medición? (sí / no)</label>
+            <input type="text" id="continuar" placeholder="Escribe 'sí' o 'no'">
+            <button onclick="registrarSpo2()">Registrar y Continuar</button>
+        </div>
+
+        <p>Historial de Registros:</p>
+        <div id="registros"></div>
+    </div>
+
+    <script>
+        // Variables de control (simulando el cuerpo del bucle DO-WHILE)
+        let continuarRegistro = 'sí';
+        let primerCiclo = true;
+        const registrosDiv = document.getElementById('registros');
+        
+        let historialRegistros = []; 
+        const UMBRAL_NORMAL = 95; // Umbral de saturación normal
+
+        function registrarSpo2() {
+            const spo2Input = document.getElementById('spo2');
+            const continuarInput = document.getElementById('continuar');
+            const spo2 = parseInt(spo2Input.value);
+            let mensaje = '';
+            
+            // 1. Control de flujo (simulando la condición del WHILE al final del ciclo anterior)
+            if (continuarRegistro.toLowerCase() === 'no') {
+                 alert("El registro ya ha finalizado.");
+                 return;
+            }
+
+            // 2. Ejecución del cuerpo (DO) - Garantizado al menos una vez
+            if (primerCiclo || continuarRegistro.toLowerCase() === 'sí') {
+                
+                // Validación de entrada
+                if (isNaN(spo2) || spo2 < 1 || spo2 > 100) {
+                    alert("Por favor, ingresa un valor de SpO2 válido (1-100).");
+                    return;
+                }
+                
+                // Aplicar la condición de alerta
+                if (spo2 < UMBRAL_NORMAL) {
+                    mensaje = `Valor: ${spo2}%. <span class="low-spo2">¡ALERTA: $\text{SpO}_2$ BAJA!</span>`;
+                } else {
+                    mensaje = `Valor: ${spo2}%. (Normal)`;
+                }
+                
+                // Almacenar y mostrar registro
+                historialRegistros.push(mensaje);
+                mostrarRegistros();
+
+                // 3. Leer la condición para la próxima iteración (WHILE)
+                continuarRegistro = continuarInput.value.toLowerCase();
+                
+                // Limpiar inputs
+                spo2Input.value = '';
+                continuarInput.value = '';
+                spo2Input.focus();
+                
+                primerCiclo = false;
+
+                // 4. Evaluar la condición y detener si es "no"
+                if (continuarRegistro === 'no') {
+                    spo2Input.disabled = true;
+                    continuarInput.disabled = true;
+                    document.querySelector('button').disabled = true;
+                    spo2Input.placeholder = "Registro finalizado.";
+                    registrosDiv.innerHTML += '<div class="registro-item">🛑 **Proceso Terminado**</div>';
+                }
+            }
+        }
+        
+        function mostrarRegistros() {
+            registrosDiv.innerHTML = ''; // Limpiar
+            // Mostrar todos los registros
+            for (let i = 0; i < historialRegistros.length; i++) {
+                registrosDiv.innerHTML += `<div class="registro-item">Medición ${i + 1}: ${historialRegistros[i]}</div>`;
+            }
+        }
+        
+        // Asegurar el focus inicial
+        document.addEventListener('DOMContentLoaded', () => {
+             document.getElementById('spo2').focus();
+        });
+    </script>
+
+</body>
+</html>
